@@ -1,0 +1,62 @@
+
+        /* Styling for tab navigation */
+.tabs {
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+.tablinks {
+    float: left;
+    background-color: #000000;
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    font-size: 17px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.tablinks:hover {
+    background-color: #66ad69;
+}
+
+.tablinks.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* Tab content styling */
+.tabcontent {
+    display: none;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+input[type="number"],
+input[type="text"] {
+    padding: 5px;
+    width: 200px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+}
+
+        
