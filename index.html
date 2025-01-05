@@ -289,9 +289,15 @@
                 <option value="WaveRouter">Wave Router</option>
                 <!-- Add more routers -->
             </select><br>
-
+            <br><label for="commonInterface">Interface:</label>
+            <select id="commonInterface" name="interface">
+            <option value="btInterface">Select an Interface</option>
+            </select>
             <label for="commonBufferSize">Buffer Size(Example: 5M):</label>
             <input type="text" id="commonBufferSize" name="bufferSize" value="5M"><br>
+            
+            <label for="commonRouteFile">Route File:</label>
+            <input type="file" id="commonRouteFile" name="RouteFile" accept=".wkt">
 
             <label for="commonWaitTime">Wait Time (Example: 0, 120):</label>
             <input type="text" id="commonWaitTime" name="WaitTime" value="0, 120"><br>
@@ -351,9 +357,9 @@
 
                 <!-- Add more movement models -->
             </select><br>
-
-
-            <!-- Add other movement models as needed -->
+            <br><label for="movementRouteType">Movement Route Type:</label>
+            <input type="file" id="movementRouteType" name="mapFiles" accept=".wkt">
+            
 
             <br><label for="waitTimeMin">Wait Time Min (seconds):</label>
             <input type="number" id="waitTimeMin" name="waitTimeMin"><br>
@@ -399,10 +405,8 @@
             <input type="text" id="msgTtl" name="msgTtl" value="300"><br>
 
             <h3>Active Times:</h3>
-            <label for="activeTimeStart1">Start 1:</label>
-            <input type="number" id="activeTimeStart1">
-            <label for="activeTimeEnd1">End 1:</label>
-            <input type="number" id="activeTimeEnd1"><br>
+            <label for="activeTimeStart1">Active Time (start1,end1,start2,end2....)</label>
+            <input type="text" id="activeTimeStart1"><br>
 
             <!-- Repeat for active time intervals as needed -->
 
@@ -651,22 +655,31 @@
             { name: "btInterface", type: "SimpleBroadcastInterface", transmitSpeed: "250k", transmitRange: "10" },
             { name: "highspeedInterface", type: "SimpleBroadcastInterface", transmitSpeed: "10M", transmitRange: "1000" }
         ];
+    // Get the select element
+    const selectElement = document.getElementById('commonInterface');
 
+    // Iterate over the array and create options
+    interfaceSettings.forEach(interfaceSetting => {
+        const option = document.createElement('option');
+        option.value = interfaceSetting.name; // Set the option value
+        option.textContent = interfaceSetting.name; // Set the visible text
+        selectElement.appendChild(option); // Add the option to the select element
+    });
         // Default values for group settings
         const groupSettings = [
-            { groupId: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "0-100", messageTTL: "50", actions: "Edit/Delete" },
-            { groupId: 'c', numHosts: 100, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "50-150", messageTTL: "100", actions: "Edit/Delete" },
-            { groupId: 'w', numHosts: 200, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "100-200", messageTTL: "150", actions: "Edit/Delete" },
-            { groupId: 't', numHosts: 150, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "150-250", messageTTL: "200", actions: "Edit/Delete" },
-            { groupId: 't', numHosts: 120, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "200-300", messageTTL: "250", actions: "Edit/Delete" },
-            { groupId: 't', numHosts: 80, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "250-350", messageTTL: "300", actions: "Edit/Delete" }
+            { groupID: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "10,100", messageTTL: "50", actions: "Edit/Delete" },
+            { groupID: 'c', numHosts: 100, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "50,150", messageTTL: "100", actions: "Edit/Delete" },
+            { groupID: 'w', numHosts: 200, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "100,200", messageTTL: "150", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 150, movementModel: "MapRouteMovement", routeFile:"data/tram3.wkt",  router: "EpidemicRouter", activeTimes: "150,250", messageTTL: "200", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 120, movementModel: "MapRouteMovement", routeFile:"data/tram4.wkt", router: "EpidemicRouter", activeTimes: "200,300", messageTTL: "250", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 80, movementModel: "MapRouteMovement", routeFile:"data/tram10.wkt", router: "EpidemicRouter", activeTimes: "250,350", messageTTL: "300", actions: "Edit/Delete" }
         ];
         // Array to store events
         const events = [{
             eventClass: 'MessageEventGenerator',
             interval: `${25}, ${35}`,
             size: `${500}k, ${1}M`,
-            hosts: `${500000} to ${1000000}`,
+            hosts: `${500000} , ${1000000}`,
             prefix: 'M'
         }];
         let table = document.getElementById('eventList').getElementsByTagName('tbody')[0];
@@ -710,7 +723,7 @@
                 eventClass: eventClass,
                 interval: `${intervalMin}, ${intervalMax}`,
                 size: `${sizeMin},${sizeMax}`,
-                hosts: `${hostsMin} to ${hostsMax}`,
+                hosts: `${hostsMin}, ${hostsMax}`,
                 prefix: prefix
             };
 
@@ -797,7 +810,7 @@
                 const row = tableBody.insertRow();
 
                 const cell1 = row.insertCell(0);
-                cell1.innerText = group.groupId;
+                cell1.innerText = group.groupID;
 
                 const cell2 = row.insertCell(1);
                 cell2.innerText = group.numHosts;
@@ -806,15 +819,18 @@
                 cell3.innerText = group.movementModel;
 
                 const cell4 = row.insertCell(3);
-                cell4.innerText = group.router;
+                cell4.innerText = group.routeFile;
 
                 const cell5 = row.insertCell(4);
-                cell5.innerText = group.activeTimes;
+                cell5.innerText = group.router;
 
                 const cell6 = row.insertCell(5);
-                cell6.innerText = group.messageTTL;
+                cell6.innerText = group.activeTimes;
 
                 const cell7 = row.insertCell(6);
+                cell7.innerText = group.messageTTL;
+
+                const cell8 = row.insertCell(7);
                 const editButton = document.createElement("button");
                 editButton.innerText = "Edit";
                 editButton.onclick = () => editGroupSetting(group);
@@ -866,27 +882,28 @@
             event.preventDefault(); // Prevent the default form submission
 
             // Extract values from the form
-            const groupId = document.getElementById("groupID").value;
+            const groupID = document.getElementById("groupID").value;
             const numHosts = parseInt(document.getElementById("numberOfHosts").value, 10);
             const movementModel = document.getElementById('Movement')?.value;
             const waitTimeMin = parseFloat(document.getElementById("waitTimeMin").value) || 0;
             const waitTimeMax = parseFloat(document.getElementById("waitTimeMax").value) || 0;
             const speedMin = parseFloat(document.getElementById("speedMin").value) || 0;
             const speedMax = parseFloat(document.getElementById("speedMax").value) || 0;
+            const movementRouteType = document.getElementById("movementRouteType").value;
             const bufferSize = parseInt(document.getElementById("bufferSize").value, 10) || 0;
             const router = document.getElementById("router").value;
             const msgTtl = document.getElementById("msgTtl").value || "infinite";
 
-            const activeTimeStart1 = parseInt(document.getElementById("activeTimeStart1").value, 10) || 0;
-            const activeTimeEnd1 = parseInt(document.getElementById("activeTimeEnd1").value, 10) || 0;
-
+            const activeTimeStart1 = document.getElementById("activeTimeStart1").value;
+            
             // Construct the new group object
             const newGroup = {
-                groupId: groupId,
+                groupID: groupID,
                 numHosts: numHosts,
                 movementModel: movementModel || "ShortestPathMapBasedMovement",
+                routeFile : movementRouteType,
                 router: router,
-                activeTimes: `${activeTimeStart1}-${activeTimeEnd1}`,
+                activeTimes: `${activeTimeStart1}`,
                 messageTTL: msgTtl,
                 actions: "Edit/Delete", // Default action text
             };
@@ -904,11 +921,11 @@
         // Function to edit group settings (as an example)
         function editGroupSetting(group) {
             // Here you can prompt for new values or open a modal to edit group settings
-            const newNumHosts = prompt(`Edit Number of Hosts for Group ${group.groupId}`, group.numHosts);
-            const newMovementModel = prompt(`Edit Movement Model for Group ${group.groupId}`, group.movementModel);
-            const newRouter = prompt(`Edit Router for Group ${group.groupId}`, group.router);
-            const newActiveTimes = prompt(`Edit Active Times for Group ${group.groupId}`, group.activeTimes);
-            const newMessageTTL = prompt(`Edit Message TTL for Group ${group.groupId}`, group.messageTTL);
+            const newNumHosts = prompt(`Edit Number of Hosts for Group ${group.groupID}`, group.numHosts);
+            const newMovementModel = prompt(`Edit Movement Model for Group ${group.groupID}`, group.movementModel);
+            const newRouter = prompt(`Edit Router for Group ${group.groupID}`, group.router);
+            const newActiveTimes = prompt(`Edit Active Times for Group ${group.groupID}`, group.activeTimes);
+            const newMessageTTL = prompt(`Edit Message TTL for Group ${group.groupID}`, group.messageTTL);
 
             if (newNumHosts && newMovementModel && newRouter && newActiveTimes && newMessageTTL) {
                 group.numHosts = newNumHosts;
@@ -1099,8 +1116,10 @@ ${interfaceName}.transmitRange = ${transmitRange}
             const CommoNmovementModel = document.getElementById("commonMovementModel").value;
             const CommoNrouter = document.getElementById("commonRouter").value;
             const CommoNbufferSize = document.getElementById("commonBufferSize").value;
+            const commonRouteFile = document.getElementById("commonRouteFile");
             const CommoNwaitTime = document.getElementById("commonWaitTime").value;
-            const CommoNinterface = document.getElementById("commonnrofInterfaces").value;
+            const commonInterface = document.getElementById("commonInterface").value;
+            const commonnrofInterfaces = document.getElementById("commonnrofInterfaces").value;
             const CommoNspeed = document.getElementById("commonSpeed").value;
             const CommoNmsgTtl = document.getElementById("commonTtl").value;
             const CommoNnumHosts = document.getElementById("commonNumberOfHost").value;
@@ -1114,10 +1133,11 @@ Scenario.nrofHostGroups = ${document.getElementById("groupList").getElementsByTa
 Group.movementModel = ${CommoNmovementModel}
 Group.router = ${CommoNrouter}
 Group.bufferSize = ${CommoNbufferSize}
+Group.routeFile = ${commonRouteFile.files[0]}
 Group.waitTime =${CommoNwaitTime}
 # All nodes have the bluetooth interface
-Group.nrofInterfaces = ${CommoNinterface}
-Group.interface = btInterface
+Group.nrofInterfaces = ${commonnrofInterfaces}
+Group.interface1 = ${commonInterface}
 Group.speed = ${CommoNspeed}
 # Message TTL of 300 minutes (5 hours)
 Group.msgTtl = ${CommoNmsgTtl}
@@ -1128,7 +1148,7 @@ Group.nrofHosts = ${CommoNnumHosts}
             const groupTableRows = document.getElementById("groupList").getElementsByTagName("tbody")[0].rows;
             let serial = 1;
             for (let row of groupTableRows) {
-                const groupId = row.cells[0].innerText;
+                const groupID = row.cells[0].innerText;
                 const numHosts = row.cells[1].innerText;
                 const movementModel = row.cells[2].innerText;
                 const router = row.cells[3].innerText;
@@ -1136,9 +1156,10 @@ Group.nrofHosts = ${CommoNnumHosts}
                 const messageTTL = row.cells[5].innerText;
 
                 content += `
-Group${serial}.groupId = ${groupId}
+Group${serial}.groupID = ${groupID}
 Group${serial}.numHosts = ${numHosts}
 Group${serial}.movementModel = ${movementModel}
+movementRouteType
 Group${serial}.router = ${router}
 Group${serial}.activeTimes = ${activeTimes}
 Group${serial}.messageTTL = ${messageTTL}
@@ -1179,7 +1200,7 @@ MapBasedMovement.nrofMapFiles = ${fileList.length}
             count = 1;
             for (const file of fileList) {
                 content += `
-MapBasedMovement.mapFile${count} = data/${file.name}`;
+MapBasedMovement.mapFile${count} = data/${file}`;
                 count++;
             }
 
@@ -1468,6 +1489,6 @@ GUI.EventLogPanel.nrofEvents = 100
         }
     </script>
 
-</body>
+</body>s
 
 </html>

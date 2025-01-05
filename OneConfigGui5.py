@@ -360,6 +360,9 @@ class Browser(QMainWindow):
             </select>
             <label for="commonBufferSize">Buffer Size(Example: 5M):</label>
             <input type="text" id="commonBufferSize" name="bufferSize" value="5M"><br>
+            
+            <label for="commonRouteFile">Route File:</label>
+            <input type="file" id="commonRouteFile" name="RouteFile" accept=".wkt">
 
             <label for="commonWaitTime">Wait Time (Example: 0, 120):</label>
             <input type="text" id="commonWaitTime" name="WaitTime" value="0, 120"><br>
@@ -419,9 +422,9 @@ class Browser(QMainWindow):
 
                 <!-- Add more movement models -->
             </select><br>
-
-
-            <!-- Add other movement models as needed -->
+            <br><label for="movementRouteType">Movement Route Type:</label>
+            <input type="file" id="movementRouteType" name="mapFiles" accept=".wkt">
+            
 
             <br><label for="waitTimeMin">Wait Time Min (seconds):</label>
             <input type="number" id="waitTimeMin" name="waitTimeMin"><br>
@@ -467,10 +470,8 @@ class Browser(QMainWindow):
             <input type="text" id="msgTtl" name="msgTtl" value="300"><br>
 
             <h3>Active Times:</h3>
-            <label for="activeTimeStart1">Start 1:</label>
-            <input type="number" id="activeTimeStart1">
-            <label for="activeTimeEnd1">End 1:</label>
-            <input type="number" id="activeTimeEnd1"><br>
+            <label for="activeTimeStart1">Active Time (start1,end1,start2,end2....)</label>
+            <input type="text" id="activeTimeStart1"><br>
 
             <!-- Repeat for active time intervals as needed -->
 
@@ -484,6 +485,7 @@ class Browser(QMainWindow):
                     <th>Group ID</th>
                     <th>Number of Hosts</th>
                     <th>Movement Model</th>
+                    <th>Movement Route</th>
                     <th>Router</th>
                     <th>Active Times</th>
                     <th>Message TTL</th>
@@ -731,12 +733,12 @@ class Browser(QMainWindow):
     });
         // Default values for group settings
         const groupSettings = [
-            { groupID: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "10,100", messageTTL: "50", actions: "Edit/Delete" },
-            { groupID: 'c', numHosts: 100, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "50,150", messageTTL: "100", actions: "Edit/Delete" },
-            { groupID: 'w', numHosts: 200, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "100,200", messageTTL: "150", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 150, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "150,250", messageTTL: "200", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 120, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "200,300", messageTTL: "250", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 80, movementModel: "MapRouteMovement", router: "EpidemicRouter", activeTimes: "250,350", messageTTL: "300", actions: "Edit/Delete" }
+            { groupID: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "50", actions: "Edit/Delete" },
+            { groupID: 'c', numHosts: 100, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "100", actions: "Edit/Delete" },
+            { groupID: 'w', numHosts: 200, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "150", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 150, movementModel: "MapRouteMovement", routeFile:"data/tram3.wkt",  router: "EpidemicRouter", activeTimes: "", messageTTL: "200", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 120, movementModel: "MapRouteMovement", routeFile:"data/tram4.wkt", router: "EpidemicRouter", activeTimes: "", messageTTL: "250", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 80, movementModel: "MapRouteMovement", routeFile:"data/tram10.wkt", router: "EpidemicRouter", activeTimes: "", messageTTL: "300", actions: "Edit/Delete" }
         ];
         // Array to store events
         const events = [{
@@ -883,15 +885,18 @@ class Browser(QMainWindow):
                 cell3.innerText = group.movementModel;
 
                 const cell4 = row.insertCell(3);
-                cell4.innerText = group.router;
+                cell4.innerText = group.routeFile;
 
                 const cell5 = row.insertCell(4);
-                cell5.innerText = group.activeTimes;
+                cell5.innerText = group.router;
 
                 const cell6 = row.insertCell(5);
-                cell6.innerText = group.messageTTL;
+                cell6.innerText = group.activeTimes;
 
                 const cell7 = row.insertCell(6);
+                cell7.innerText = group.messageTTL;
+
+                const cell8 = row.insertCell(7);
                 const editButton = document.createElement("button");
                 editButton.innerText = "Edit";
                 editButton.onclick = () => editGroupSetting(group);
@@ -950,20 +955,21 @@ class Browser(QMainWindow):
             const waitTimeMax = parseFloat(document.getElementById("waitTimeMax").value) || 0;
             const speedMin = parseFloat(document.getElementById("speedMin").value) || 0;
             const speedMax = parseFloat(document.getElementById("speedMax").value) || 0;
+            const movementRouteType = document.getElementById("movementRouteType").value;
             const bufferSize = parseInt(document.getElementById("bufferSize").value, 10) || 0;
             const router = document.getElementById("router").value;
             const msgTtl = document.getElementById("msgTtl").value || "infinite";
 
-            const activeTimeStart1 = parseInt(document.getElementById("activeTimeStart1").value, 10) || 0;
-            const activeTimeEnd1 = parseInt(document.getElementById("activeTimeEnd1").value, 10) || 0;
-
+            const activeTimeStart1 = document.getElementById("activeTimeStart1").value;
+            
             // Construct the new group object
             const newGroup = {
                 groupID: groupID,
                 numHosts: numHosts,
                 movementModel: movementModel || "ShortestPathMapBasedMovement",
+                routeFile : movementRouteType,
                 router: router,
-                activeTimes: `${activeTimeStart1},${activeTimeEnd1}`,
+                activeTimes: `${activeTimeStart1}`,
                 messageTTL: msgTtl,
                 actions: "Edit/Delete", // Default action text
             };
@@ -1176,6 +1182,7 @@ ${interfaceName}.transmitRange = ${transmitRange}
             const CommoNmovementModel = document.getElementById("commonMovementModel").value;
             const CommoNrouter = document.getElementById("commonRouter").value;
             const CommoNbufferSize = document.getElementById("commonBufferSize").value;
+            const commonRouteFile = document.getElementById("commonRouteFile");
             const CommoNwaitTime = document.getElementById("commonWaitTime").value;
             const commonInterface = document.getElementById("commonInterface").value;
             const commonnrofInterfaces = document.getElementById("commonnrofInterfaces").value;
@@ -1192,6 +1199,7 @@ Scenario.nrofHostGroups = ${document.getElementById("groupList").getElementsByTa
 Group.movementModel = ${CommoNmovementModel}
 Group.router = ${CommoNrouter}
 Group.bufferSize = ${CommoNbufferSize}
+Group.routeFile = ${commonRouteFile}
 Group.waitTime =${CommoNwaitTime}
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = ${commonnrofInterfaces}
@@ -1217,6 +1225,7 @@ Group.nrofHosts = ${CommoNnumHosts}
 Group${serial}.groupID = ${groupID}
 Group${serial}.numHosts = ${numHosts}
 Group${serial}.movementModel = ${movementModel}
+movementRouteType
 Group${serial}.router = ${router}
 Group${serial}.activeTimes = ${activeTimes}
 Group${serial}.messageTTL = ${messageTTL}
