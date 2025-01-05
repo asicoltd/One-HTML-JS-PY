@@ -1,0 +1,130 @@
+
+## Scenario settings
+Scenario.name = Default Scenario
+Scenario.simulateConnections = true
+Scenario.updateInterval = 0.1
+Scenario.endTime = 43200
+    
+## Interface List Settings:
+
+#btInterface.name = btInterface
+btInterface.type = SimpleBroadcastInterface
+btInterface.transmitSpeed = 250k
+btInterface.transmitRange = 10
+        
+#highspeedInterface.name = highspeedInterface
+highspeedInterface.type = SimpleBroadcastInterface
+highspeedInterface.transmitSpeed = 10M
+highspeedInterface.transmitRange = 1000
+        
+Scenario.nrofHostGroups = 6
+        
+## Common settings for all groups:
+Group.movementModel = BusControlSystem
+Group.router = ActiveRouter
+Group.bufferSize = 5M
+Group.waitTime =0, 120
+# All nodes have the bluetooth interface
+Group.nrofInterfaces = 1
+Group.interface = btInterface
+Group.speed = 0.5, 1.5
+# Message TTL of 300 minutes (5 hours)
+Group.msgTtl = 300
+Group.nrofHosts = 40
+
+Group1.groupID = p
+Group1.numHosts = 50
+Group1.movementModel = ShortestPathMapBasedMovement
+Group1.router = EpidemicRouter
+Group1.activeTimes = 10,100
+Group1.messageTTL = 50
+        
+Group2.groupID = c
+Group2.numHosts = 100
+Group2.movementModel = ShortestPathMapBasedMovement
+Group2.router = EpidemicRouter
+Group2.activeTimes = 50,150
+Group2.messageTTL = 100
+        
+Group3.groupID = w
+Group3.numHosts = 200
+Group3.movementModel = ShortestPathMapBasedMovement
+Group3.router = EpidemicRouter
+Group3.activeTimes = 100,200
+Group3.messageTTL = 150
+        
+Group4.groupID = t
+Group4.numHosts = 150
+Group4.movementModel = MapRouteMovement
+Group4.router = EpidemicRouter
+Group4.activeTimes = 150,250
+Group4.messageTTL = 200
+        
+Group5.groupID = t
+Group5.numHosts = 120
+Group5.movementModel = MapRouteMovement
+Group5.router = EpidemicRouter
+Group5.activeTimes = 200,300
+Group5.messageTTL = 250
+        
+Group6.groupID = t
+Group6.numHosts = 80
+Group6.movementModel = MapRouteMovement
+Group6.router = EpidemicRouter
+Group6.activeTimes = 250,350
+Group6.messageTTL = 300
+        
+## Event settings
+Events.nrof = 1
+Events1.class = MessageEventGenerator
+Events1.interval =25, 35
+Events1.size =500k, 1M
+Events1.hosts = 500000 , 1000000
+Events1.prefix = M
+    
+## Movement model settings
+# seed for movement models' pseudo random number generator (default = 0)
+MovementModel.rngSeed = 1
+# World's size for Movement Models without implicit size (width, height; meters)
+MovementModel.worldSize = 4500, 3400
+# How long time to move hosts in the world before real simulation
+MovementModel.warmup = 1000
+## Map based movement -movement model specific settings
+MapBasedMovement.nrofMapFiles = 4
+
+MapBasedMovement.mapFile1 = data/undefined
+MapBasedMovement.mapFile2 = data/undefined
+MapBasedMovement.mapFile3 = data/undefined
+MapBasedMovement.mapFile4 = data/undefined
+## Report settings
+Report.nrofReports = 2
+Report.warmup = 0
+Report.reportDir = reports/
+Report.report1 = ContactTimesReport
+Report.report2 = MessageStatsReport
+## Default settings for some routers settings
+ProphetRouter.secondsInTimeUnit = 30
+SprayAndWaitRouter.nrofCopies = 6
+SprayAndWaitRouter.binaryMode = true
+
+## Optimization settings -- these affect the speed of the simulation
+## see World class for details.
+Optimization.cellSizeMult = 5
+Optimization.randomizeUpdateOrder = true
+        
+## GUI settings
+
+# GUI underlay image settings
+GUI.UnderlayImage.fileName = data/helsinki_underlay.png
+# Image offset in pixels (x, y)
+GUI.UnderlayImage.offset = 64,20
+# Scaling factor for the image
+GUI.UnderlayImage.scale = 4.75
+# Image rotation (radians)
+GUI.UnderlayImage.rotate = -0.015
+
+# how many events to show in the log panel (default = 30)
+GUI.EventLogPanel.nrofEvents = 100
+# Regular Expression log filter (see Pattern-class from the Java API for RE-matching details)
+#GUI.EventLogPanel.REfilter = .*p[1-9]<->p[1-9]$
+    
