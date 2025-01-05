@@ -1,5 +1,4 @@
-
-#import subprocess; subprocess.run("pip install PyQt5 PyQtWebEngine", shell=True)
+import subprocess; subprocess.run("pip install PyQt5 PyQtWebEngine", shell=True)
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QTextEdit, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
@@ -355,7 +354,10 @@ class Browser(QMainWindow):
                 <option value="WaveRouter">Wave Router</option>
                 <!-- Add more routers -->
             </select><br>
-
+            <br><label for="commonInterface">Interface:</label>
+            <select id="commonInterface" name="interface">
+            <option value="btInterface">Select an Interface</option>
+            </select>
             <label for="commonBufferSize">Buffer Size(Example: 5M):</label>
             <input type="text" id="commonBufferSize" name="bufferSize" value="5M"><br>
 
@@ -717,7 +719,16 @@ class Browser(QMainWindow):
             { name: "btInterface", type: "SimpleBroadcastInterface", transmitSpeed: "250k", transmitRange: "10" },
             { name: "highspeedInterface", type: "SimpleBroadcastInterface", transmitSpeed: "10M", transmitRange: "1000" }
         ];
+    // Get the select element
+    const selectElement = document.getElementById('commonInterface');
 
+    // Iterate over the array and create options
+    interfaceSettings.forEach(interfaceSetting => {
+        const option = document.createElement('option');
+        option.value = interfaceSetting.name; // Set the option value
+        option.textContent = interfaceSetting.name; // Set the visible text
+        selectElement.appendChild(option); // Add the option to the select element
+    });
         // Default values for group settings
         const groupSettings = [
             { groupID: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", router: "EpidemicRouter", activeTimes: "10,100", messageTTL: "50", actions: "Edit/Delete" },
@@ -1166,7 +1177,8 @@ ${interfaceName}.transmitRange = ${transmitRange}
             const CommoNrouter = document.getElementById("commonRouter").value;
             const CommoNbufferSize = document.getElementById("commonBufferSize").value;
             const CommoNwaitTime = document.getElementById("commonWaitTime").value;
-            const CommoNinterface = document.getElementById("commonnrofInterfaces").value;
+            const commonInterface = document.getElementById("commonInterface").value;
+            const commonnrofInterfaces = document.getElementById("commonnrofInterfaces").value;
             const CommoNspeed = document.getElementById("commonSpeed").value;
             const CommoNmsgTtl = document.getElementById("commonTtl").value;
             const CommoNnumHosts = document.getElementById("commonNumberOfHost").value;
@@ -1182,8 +1194,8 @@ Group.router = ${CommoNrouter}
 Group.bufferSize = ${CommoNbufferSize}
 Group.waitTime =${CommoNwaitTime}
 # All nodes have the bluetooth interface
-Group.nrofInterfaces = ${CommoNinterface}
-Group.interface = btInterface
+Group.nrofInterfaces = ${commonnrofInterfaces}
+Group.interface1 = ${commonInterface}
 Group.speed = ${CommoNspeed}
 # Message TTL of 300 minutes (5 hours)
 Group.msgTtl = ${CommoNmsgTtl}
@@ -1245,7 +1257,7 @@ MapBasedMovement.nrofMapFiles = ${fileList.length}
             count = 1;
             for (const file of fileList) {
                 content += `
-MapBasedMovement.mapFile${count} = data/${file.name}`;
+MapBasedMovement.mapFile${count} = data/${file}`;
                 count++;
             }
 

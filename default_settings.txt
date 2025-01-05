@@ -26,7 +26,7 @@ Group.bufferSize = 5M
 Group.waitTime =0, 120
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = 1
-Group.interface = btInterface
+Group.interface1 = btInterface
 Group.speed = 0.5, 1.5
 # Message TTL of 300 minutes (5 hours)
 Group.msgTtl = 300
@@ -92,10 +92,10 @@ MovementModel.warmup = 1000
 ## Map based movement -movement model specific settings
 MapBasedMovement.nrofMapFiles = 4
 
-MapBasedMovement.mapFile1 = data/undefined
-MapBasedMovement.mapFile2 = data/undefined
-MapBasedMovement.mapFile3 = data/undefined
-MapBasedMovement.mapFile4 = data/undefined
+MapBasedMovement.mapFile1 = data/shops.wkt
+MapBasedMovement.mapFile2 = data/pedestrian_paths.wkt
+MapBasedMovement.mapFile3 = data/main_roads.wkt
+MapBasedMovement.mapFile4 = data/roads.wkt
 ## Report settings
 Report.nrofReports = 2
 Report.warmup = 0
