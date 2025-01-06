@@ -1,4 +1,4 @@
-import subprocess; subprocess.run("pip install PyQt5 PyQtWebEngine", shell=True)
+import importlib.util, subprocess; [subprocess.run(f"pip install {p}", shell=True) for p in ("PyQt5", "PyQtWebEngine") if not importlib.util.find_spec(p)]
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QTextEdit, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
@@ -43,7 +43,6 @@ class CommandThread(QThread):
         process.stdout.close()
         process.stderr.close()
         process.wait()
-
 class Browser(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -213,6 +212,7 @@ class Browser(QMainWindow):
         <button class="tablinks" onclick="openTab(event, 'ReportSettings')">Report Settings</button>
         <button class="tablinks" onclick="openTab(event, 'RouterOptimizationSettings')">Router and Optimization</button>
         <button class="tablinks" onclick="openTab(event, 'GUISettings')">GUI Settings</button>
+        <button class="tablinks" onclick="openTab(event, 'fileInput')">Default Settings</button>
     </div>
     <br><br><br>
     <!-- Scenario Settings -->
@@ -222,6 +222,8 @@ class Browser(QMainWindow):
         <form id="scenarioForm">
             <label for="scenarioName">Scenario Name: </label>
             <input type="text" id="scenarioName" name="scenarioName" value="Default Scenario">
+            <label for="nameAdd">Add</label>
+            <input type="checkbox" id="nameAdd">Time & Date
             <br><br>
             <label for="simulateConnections">Simulate Connections: </label>
             <input type="checkbox" id="simulateConnections" name="simulateConnections" checked>
@@ -245,6 +247,7 @@ class Browser(QMainWindow):
 
         <!-- Form for Adding New Interface -->
         <form id="newInterfaceForm">
+        
             <label for="interfaceName"> <b>Interface Name:</b></label>
             <input type="text" id="interfaceName" name="interfaceName" required>
             <br>
@@ -356,11 +359,11 @@ class Browser(QMainWindow):
             </select><br>
             <br><label for="commonInterface">Interface:</label>
             <select id="commonInterface" name="interface">
-            <option value="btInterface">Select an Interface</option>
+                <option value="btInterface">Select an Interface</option>
             </select>
             <label for="commonBufferSize">Buffer Size(Example: 5M):</label>
             <input type="text" id="commonBufferSize" name="bufferSize" value="5M"><br>
-            
+
             <label for="commonRouteFile">Route File:</label>
             <input type="file" id="commonRouteFile" name="RouteFile" accept=".wkt">
 
@@ -422,9 +425,11 @@ class Browser(QMainWindow):
 
                 <!-- Add more movement models -->
             </select><br>
-            <br><label for="movementRouteType">Movement Route Type:</label>
-            <input type="file" id="movementRouteType" name="mapFiles" accept=".wkt">
-            
+            <br><label for="movementRoute">Movement Route (.wkt):</label>
+            <input type="file" id="movementRoute" name="mapFiles" accept=".wkt">
+
+            <br><label for="movementRouteType">Movement Route Type (1/2):</label>
+            <input type="number" id="movementRouteType" name="movementRouteType" value='0'>
 
             <br><label for="waitTimeMin">Wait Time Min (seconds):</label>
             <input type="number" id="waitTimeMin" name="waitTimeMin"><br>
@@ -469,7 +474,7 @@ class Browser(QMainWindow):
             <label for="msgTtl">Message TTL:</label>
             <input type="text" id="msgTtl" name="msgTtl" value="300"><br>
 
-            <h3>Active Times:</h3>
+            <h3>Active Times (0 for disable it):</h3>
             <label for="activeTimeStart1">Active Time (start1,end1,start2,end2....)</label>
             <input type="text" id="activeTimeStart1"><br>
 
@@ -486,6 +491,7 @@ class Browser(QMainWindow):
                     <th>Number of Hosts</th>
                     <th>Movement Model</th>
                     <th>Movement Route</th>
+                    <th>Route Type</th>
                     <th>Router</th>
                     <th>Active Times</th>
                     <th>Message TTL</th>
@@ -708,7 +714,39 @@ class Browser(QMainWindow):
             <br><br>
         </form>
     </div>
-    <br><br><br><br>
+    <br>
+
+    <!-- Default Settings -->
+    <div id="fileInput" class="tabcontent">
+        <h1>Open and Show Text File</h1>
+    <input type="file" id="fileInput" accept=".txt">
+    <div id="fileContent" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 20px;"></div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const fileContentDiv = document.getElementById('fileContent');
+            
+            if (file) {
+                // Clear previous content before displaying new content
+                fileContentDiv.textContent = "";
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileContentDiv.textContent = e.target.result; // Show new file content
+                };
+                reader.readAsText(file);
+                
+                // Reset the file input to allow re-selection of the same file
+                event.target.value = ""; // Reset the input field
+            } else {
+                fileContentDiv.textContent = "No file selected.";
+            }
+        });
+    </script>
+            
+    </div>
+    <br><br><br>
 
     <div class="button-container">
         <button class="custom" onclick="saveAllSettings()">Save Custom Settings</button>
@@ -721,31 +759,31 @@ class Browser(QMainWindow):
             { name: "btInterface", type: "SimpleBroadcastInterface", transmitSpeed: "250k", transmitRange: "10" },
             { name: "highspeedInterface", type: "SimpleBroadcastInterface", transmitSpeed: "10M", transmitRange: "1000" }
         ];
-    // Get the select element
-    const selectElement = document.getElementById('commonInterface');
+        // Get the select element
+        const selectElement = document.getElementById('commonInterface');
 
-    // Iterate over the array and create options
-    interfaceSettings.forEach(interfaceSetting => {
-        const option = document.createElement('option');
-        option.value = interfaceSetting.name; // Set the option value
-        option.textContent = interfaceSetting.name; // Set the visible text
-        selectElement.appendChild(option); // Add the option to the select element
-    });
+        // Iterate over the array and create options
+        interfaceSettings.forEach(interfaceSetting => {
+            const option = document.createElement('option');
+            option.value = interfaceSetting.name; // Set the option value
+            option.textContent = interfaceSetting.name; // Set the visible text
+            selectElement.appendChild(option); // Add the option to the select element
+        });
         // Default values for group settings
         const groupSettings = [
-            { groupID: 'p', numHosts: 50, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "50", actions: "Edit/Delete" },
-            { groupID: 'c', numHosts: 100, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "100", actions: "Edit/Delete" },
-            { groupID: 'w', numHosts: 200, movementModel: "ShortestPathMapBasedMovement", routeFile:"", router: "EpidemicRouter", activeTimes: "", messageTTL: "150", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 150, movementModel: "MapRouteMovement", routeFile:"data/tram3.wkt",  router: "EpidemicRouter", activeTimes: "", messageTTL: "200", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 120, movementModel: "MapRouteMovement", routeFile:"data/tram4.wkt", router: "EpidemicRouter", activeTimes: "", messageTTL: "250", actions: "Edit/Delete" },
-            { groupID: 't', numHosts: 80, movementModel: "MapRouteMovement", routeFile:"data/tram10.wkt", router: "EpidemicRouter", activeTimes: "", messageTTL: "300", actions: "Edit/Delete" }
+            { groupID: 'p', numHosts: 5, movementModel: "ShortestPathMapBasedMovement", routeFile: "", routeType: 0, router: "EpidemicRouter", activeTimes: "0", messageTTL: "50", actions: "Edit/Delete" },
+            { groupID: 'c', numHosts: 10, movementModel: "ShortestPathMapBasedMovement", routeFile: "", routeType: 0, router: "EpidemicRouter", activeTimes: "0", messageTTL: "100", actions: "Edit/Delete" },
+            { groupID: 'w', numHosts: 20, movementModel: "ShortestPathMapBasedMovement", routeFile: "", routeType: 0, router: "EpidemicRouter", activeTimes: "0", messageTTL: "150", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 15, movementModel: "MapRouteMovement", routeFile: "data/tram3.wkt", routeType: 1, router: "EpidemicRouter", activeTimes: "0", messageTTL: "200", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 12, movementModel: "MapRouteMovement", routeFile: "data/tram4.wkt", routeType: 2, router: "EpidemicRouter", activeTimes: "0", messageTTL: "250", actions: "Edit/Delete" },
+            { groupID: 't', numHosts: 8, movementModel: "MapRouteMovement", routeFile: "data/tram10.wkt", routeType: 2, router: "EpidemicRouter", activeTimes: "0", messageTTL: "300", actions: "Edit/Delete" }
         ];
         // Array to store events
         const events = [{
             eventClass: 'MessageEventGenerator',
             interval: `${25}, ${35}`,
             size: `${500}k, ${1}M`,
-            hosts: `${500000} , ${1000000}`,
+            hosts: `${0} , ${220}`,
             prefix: 'M'
         }];
         let table = document.getElementById('eventList').getElementsByTagName('tbody')[0];
@@ -888,25 +926,28 @@ class Browser(QMainWindow):
                 cell4.innerText = group.routeFile;
 
                 const cell5 = row.insertCell(4);
-                cell5.innerText = group.router;
+                cell5.innerText = group.routeType;
 
                 const cell6 = row.insertCell(5);
-                cell6.innerText = group.activeTimes;
+                cell6.innerText = group.router;
 
                 const cell7 = row.insertCell(6);
-                cell7.innerText = group.messageTTL;
+                cell7.innerText = group.activeTimes;
 
                 const cell8 = row.insertCell(7);
+                cell8.innerText = group.messageTTL;
+
+                const cell9 = row.insertCell(8);
                 const editButton = document.createElement("button");
                 editButton.innerText = "Edit";
                 editButton.onclick = () => editGroupSetting(group);
-                cell7.appendChild(editButton);
+                cell9.appendChild(editButton);
 
                 // Add Remove button
                 const removeButton = document.createElement("button");
                 removeButton.innerText = "Remove";
                 removeButton.onclick = () => removeGroupSetting(index);
-                cell7.appendChild(removeButton);
+                cell9.appendChild(removeButton);
             });
         }
 
@@ -955,21 +996,23 @@ class Browser(QMainWindow):
             const waitTimeMax = parseFloat(document.getElementById("waitTimeMax").value) || 0;
             const speedMin = parseFloat(document.getElementById("speedMin").value) || 0;
             const speedMax = parseFloat(document.getElementById("speedMax").value) || 0;
-            const movementRouteType = document.getElementById("movementRouteType").value;
+            const movementRoute = document.getElementById("movementRoute").value;
+            const movementRouteType = document.getElementById("movementRoute");
             const bufferSize = parseInt(document.getElementById("bufferSize").value, 10) || 0;
             const router = document.getElementById("router").value;
             const msgTtl = document.getElementById("msgTtl").value || "infinite";
 
             const activeTimeStart1 = document.getElementById("activeTimeStart1").value;
-            
+
             // Construct the new group object
             const newGroup = {
                 groupID: groupID,
                 numHosts: numHosts,
                 movementModel: movementModel || "ShortestPathMapBasedMovement",
-                routeFile : movementRouteType,
+                routeFile: movementRoute,
+                routeRouteType: movementRouteType,
                 router: router,
-                activeTimes: `${activeTimeStart1}`,
+                activeTimes: activeTimeStart1,
                 messageTTL: msgTtl,
                 actions: "Edit/Delete", // Default action text
             };
@@ -1146,9 +1189,26 @@ class Browser(QMainWindow):
 
             // Collect all tabs' data
             // Scenario Tab
+            let name = document.getElementById("scenarioName").value;
+            var currentDate = new Date();
+
+            // Extract the components of the current date and time
+            var year = currentDate.getFullYear();
+            var month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+            var day = String(currentDate.getDate()).padStart(2, '0');
+            var hours = String(currentDate.getHours()).padStart(2, '0');
+            var minutes = String(currentDate.getMinutes()).padStart(2, '0');
+            var seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+            // Format the date and time
+            var formattedDateTime = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+
+            if (document.getElementById("nameAdd").checked) {
+                name += '_' + formattedDateTime;
+            }
             content += `
 ## Scenario settings
-Scenario.name = ${document.getElementById("scenarioName").value}
+Scenario.name = ${name}
 Scenario.simulateConnections = ${document.getElementById("simulateConnections").checked ? "true" : "false"}
 Scenario.updateInterval = ${document.getElementById("updateInterval").value}
 Scenario.endTime = ${document.getElementById("endTime").value}
@@ -1198,8 +1258,13 @@ Scenario.nrofHostGroups = ${document.getElementById("groupList").getElementsByTa
 ## Common settings for all groups:
 Group.movementModel = ${CommoNmovementModel}
 Group.router = ${CommoNrouter}
-Group.bufferSize = ${CommoNbufferSize}
-Group.routeFile = ${commonRouteFile}
+Group.bufferSize = ${CommoNbufferSize}`
+            if (commonRouteFile.value != '') {
+                content += `
+   Group.routeFile = ${commonRouteFile.value}
+   `
+            }
+            content += `
 Group.waitTime =${CommoNwaitTime}
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = ${commonnrofInterfaces}
@@ -1217,19 +1282,41 @@ Group.nrofHosts = ${CommoNnumHosts}
                 const groupID = row.cells[0].innerText;
                 const numHosts = row.cells[1].innerText;
                 const movementModel = row.cells[2].innerText;
-                const router = row.cells[3].innerText;
-                const activeTimes = row.cells[4].innerText;
-                const messageTTL = row.cells[5].innerText;
+                const route = row.cells[3].innerText;
+                const routeType = row.cells[4].innerText;
+                const router = row.cells[5].innerText;
+                const activeTimes = row.cells[6].innerText;
+                const messageTTL = row.cells[7].innerText;
 
                 content += `
 Group${serial}.groupID = ${groupID}
 Group${serial}.numHosts = ${numHosts}
 Group${serial}.movementModel = ${movementModel}
-movementRouteType
+`
+                if (route != '') {
+                    content += `
+Group${serial}.routeFile = ${route}
+`
+                }
+
+                content += `
 Group${serial}.router = ${router}
-Group${serial}.activeTimes = ${activeTimes}
+`
+                if (routeType) {
+                    content += `
+Group${serial}.routeType = ${routeType}
+`
+                }
+                content += `
 Group${serial}.messageTTL = ${messageTTL}
-        `;
+`
+                if (activeTimes != '0') {
+                    content += `
+ Group${serial}.activeTimes = ${activeTimes}
+ 
+ `;
+                }
+
                 serial++;
             }
 

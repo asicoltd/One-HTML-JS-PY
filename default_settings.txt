@@ -23,7 +23,6 @@ Scenario.nrofHostGroups = 6
 Group.movementModel = BusControlSystem
 Group.router = ActiveRouter
 Group.bufferSize = 5M
-Group.routeFile = [object HTMLInputElement]
 Group.waitTime =0, 120
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = 1
@@ -34,59 +33,77 @@ Group.msgTtl = 300
 Group.nrofHosts = 40
 
 Group1.groupID = p
-Group1.numHosts = 50
+Group1.numHosts = 5
 Group1.movementModel = ShortestPathMapBasedMovement
-movementRouteType
-Group1.router = 
-Group1.activeTimes = EpidemicRouter
-Group1.messageTTL = 
-        
+
+Group1.router = EpidemicRouter
+
+Group1.routeType = 0
+
+Group1.messageTTL = 50
+
 Group2.groupID = c
-Group2.numHosts = 100
+Group2.numHosts = 10
 Group2.movementModel = ShortestPathMapBasedMovement
-movementRouteType
-Group2.router = 
-Group2.activeTimes = EpidemicRouter
-Group2.messageTTL = 
-        
+
+Group2.router = EpidemicRouter
+
+Group2.routeType = 0
+
+Group2.messageTTL = 100
+
 Group3.groupID = w
-Group3.numHosts = 200
+Group3.numHosts = 20
 Group3.movementModel = ShortestPathMapBasedMovement
-movementRouteType
-Group3.router = 
-Group3.activeTimes = EpidemicRouter
-Group3.messageTTL = 
-        
+
+Group3.router = EpidemicRouter
+
+Group3.routeType = 0
+
+Group3.messageTTL = 150
+
 Group4.groupID = t
-Group4.numHosts = 150
+Group4.numHosts = 15
 Group4.movementModel = MapRouteMovement
-movementRouteType
-Group4.router = data/tram3.wkt
-Group4.activeTimes = EpidemicRouter
-Group4.messageTTL = 
-        
+
+Group4.routeFile = data/tram3.wkt
+
+Group4.router = EpidemicRouter
+
+Group4.routeType = 1
+
+Group4.messageTTL = 200
+
 Group5.groupID = t
-Group5.numHosts = 120
+Group5.numHosts = 12
 Group5.movementModel = MapRouteMovement
-movementRouteType
-Group5.router = data/tram4.wkt
-Group5.activeTimes = EpidemicRouter
-Group5.messageTTL = 
-        
+
+Group5.routeFile = data/tram4.wkt
+
+Group5.router = EpidemicRouter
+
+Group5.routeType = 2
+
+Group5.messageTTL = 250
+
 Group6.groupID = t
-Group6.numHosts = 80
+Group6.numHosts = 8
 Group6.movementModel = MapRouteMovement
-movementRouteType
-Group6.router = data/tram10.wkt
-Group6.activeTimes = EpidemicRouter
-Group6.messageTTL = 
-        
+
+Group6.routeFile = data/tram10.wkt
+
+Group6.router = EpidemicRouter
+
+Group6.routeType = 2
+
+Group6.messageTTL = 300
+
 ## Event settings
 Events.nrof = 1
 Events1.class = MessageEventGenerator
 Events1.interval =25, 35
 Events1.size =500k, 1M
-Events1.hosts = 500000 , 1000000
+Events1.hosts = 0 , 220
 Events1.prefix = M
     
 ## Movement model settings
