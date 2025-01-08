@@ -1,8 +1,8 @@
 <raw>
-<img src="./one.png" alt="My resized image" style="width: 300px; height: 200px;">
+<img src="./one.png" alt="My resized image" style="width: 300px; height: 300px;">
 </raw>
 
-This is some text following the resized image.
+
 # Simulation Automation Tool
 The Opportunistic Network Environment simulator.
 This project provides a user-friendly GUI to automate a simulation software. It eliminates manual editing of configuration files, generates reports, and allows users to download them. Built using PyQt5 and web technologies, it streamlines simulation workflows for faster results.
