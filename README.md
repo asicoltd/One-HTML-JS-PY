@@ -1,5 +1,5 @@
 # Simulation Automation Tool
-
+The Opportunistic Network Environment simulator.
 This project provides a user-friendly GUI to automate a simulation software. It eliminates manual editing of configuration files, generates reports, and allows users to download them. Built using PyQt5 and web technologies, it streamlines simulation workflows for faster results.
 
 ---
@@ -35,9 +35,27 @@ Ensure the following are installed on your system:
 3.Run the Application: Launch the GUI application with:
     ```bash
     python abc.py
+4.Run the Application: Launch with browser
+    ```bash
+    index.html
 
 
+# Usage
+1. Launch the application.
+2. Use the GUI to:
 
+- View and edit simulation configuration files.
+- Generate simulation reports.
+- Download generated reports.
+
+# Customize settings dynamically without manual file editing.
+simulation-automation-tool/
+├── abc.py                # Main Python script for the GUI
+├── requirements.txt      # Python dependencies
+├── index.html            # HTML for the GUI frontend
+├── styles.css            # CSS for styling the GUI
+├── default_settings.txt  # Example configuration file
+├── README.md             # Project documentation
 
 The Opportunistic Network Environment simulator.
 
@@ -47,11 +65,3 @@ For instructions on how to get started, see [the README](https://github.com/aker
 
 The [wiki page](https://github.com/akeranen/the-one/wiki) has the latest information.
 
-
-The Opportunistic Network Environment simulator.
-
-For introduction and releases, see [the ONE homepage at GitHub](http://akeranen.github.io/the-one/).
-
-For instructions on how to get started, see [the README](https://github.com/akeranen/the-one/wiki/README).
-
-The [wiki page](https://github.com/akeranen/the-one/wiki) has the latest information.
