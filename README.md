@@ -18,7 +18,7 @@ This project provides a user-friendly GUI to automate a simulation software. It 
 ### Prerequisites
 
 Ensure the following are installed on your system:
-
+- **java version 8** download java for the project
 - **Python 3.8 or higher**: [Download Python](https://www.python.org/downloads/)
 - **Pip**: Python's package manager (usually included with Python)
 - **PyQt5**: Install using pip: `pip install PyQt5 PyQtWebEngine`
