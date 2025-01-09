@@ -19,18 +19,23 @@ The **OneConfigGui** interface is designed to provide an intuitive and user-frie
 
 **Screenshot:**  
 ![image_2025-01-09_174025801](https://github.com/user-attachments/assets/04cce410-8089-4172-8004-64beede49168)
+
 Fig 1: Full GUI
 
 ![image_2025-01-05_040401038](https://github.com/user-attachments/assets/f5c1aa87-d9a3-4306-912e-6b4d5832e5fc)
+
 Fig 2: Main Menu
 
 ![image_2025-01-09_174039674](https://github.com/user-attachments/assets/649d16b9-a127-4ae4-b0f8-c5bd333c93af)
+
 Fig 3: Buttons to set default\_settings.txt to customized or ONE provided one
 
 ![image_2025-01-09_174107606](https://github.com/user-attachments/assets/cf72cc53-7979-49c8-803f-58bad4734230)
+
 Fig 4: Check-box, fill box, and buttons for running compile.bat, one.bat with GUI/ without GUI
 
 ![image_2025-01-09_174117421](https://github.com/user-attachments/assets/93e9d246-7573-4d50-a9d6-c800e21e80dc)
+
 Fig 5: Command Prompt to show the direct output of the script
 
 #### **How to Install and Run**
