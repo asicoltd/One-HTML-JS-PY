@@ -183,6 +183,7 @@
 
         <!-- Form for Adding New Interface -->
         <form id="newInterfaceForm">
+        
             <label for="interfaceName"> <b>Interface Name:</b></label>
             <input type="text" id="interfaceName" name="interfaceName" required>
             <br>
@@ -653,39 +654,33 @@
 
     <!-- Default Settings -->
     <div id="fileInput" class="tabcontent">
-        <!DOCTYPE html>
-        <html lang="en">
+        <h1>Open and Show Text File</h1>
+    <input type="file" id="fileInput" accept=".txt">
+    <div id="fileContent" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 20px;"></div>
 
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Open and Display Text File</title>
-        </head>
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const fileContentDiv = document.getElementById('fileContent');
+            
+            if (file) {
+                // Clear previous content before displaying new content
+                fileContentDiv.textContent = "";
 
-        <body>
-            <h1>Open and Show Text File</h1>
-            <input type="file" id="fileInput" accept=".txt">
-            <div id="fileContent"
-                style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 20px;"></div>
-
-            <script>
-                document.getElementById('fileInput').addEventListener('change', function (event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function (e) {
-                            document.getElementById('fileContent').textContent = e.target.result;
-                        };
-                        reader.readAsText(file);
-                    } else {
-                        document.getElementById('fileContent').textContent = "No file selected.";
-                    }
-                });
-            </script>
-        </body>
-
-        </html>
-
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileContentDiv.textContent = e.target.result; // Show new file content
+                };
+                reader.readAsText(file);
+                
+                // Reset the file input to allow re-selection of the same file
+                event.target.value = ""; // Reset the input field
+            } else {
+                fileContentDiv.textContent = "No file selected.";
+            }
+        });
+    </script>
+            
     </div>
     <br><br><br>
 
