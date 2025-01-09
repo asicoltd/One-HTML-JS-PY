@@ -1,4 +1,4 @@
-import importlib.util, subprocess; [subprocess.run(f"pip install {p}", shell=True) for p in ("PyQt5", "PyQtWebEngine") if not importlib.util.find_spec(p)]
+import subprocess;
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QTextEdit, QLineEdit, QCheckBox, QSpacerItem, QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
